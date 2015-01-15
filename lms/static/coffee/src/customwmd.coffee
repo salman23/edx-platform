@@ -1,12 +1,7 @@
 # Mostly adapted from math.stackexchange.com: http://cdn.sstatic.net/js/mathjax-editing-new.js
 
 $ ->
-
-  if not MathJax?
-    return
-
-  HUB = MathJax.Hub
-
+  
   class MathJaxProcessor
 
     MATHSPLIT = /// (
@@ -116,10 +111,12 @@ $ ->
     Markdown.getMathCompatibleConverter = (postProcessor) ->
       postProcessor ||= ((text) -> text)
       converter = Markdown.getSanitizingConverter()
-      processor = new MathJaxProcessor()
-      converter.hooks.chain "preConversion", MathJaxProcessor.removeMathWrapper(processor)
-      converter.hooks.chain "postConversion", (text) ->
-        postProcessor(MathJaxProcessor.replaceMathWrapper(processor)(text))
+      if MathJax?
+        HUB = MathJax.Hub
+        processor = new MathJaxProcessor()
+        converter.hooks.chain "preConversion", MathJaxProcessor.removeMathWrapper(processor)
+        converter.hooks.chain "postConversion", (text) ->
+          postProcessor(MathJaxProcessor.replaceMathWrapper(processor)(text))
       converter
 
     Markdown.makeWmdEditor = (elem, appended_id, imageUploadUrl, postProcessor) ->
