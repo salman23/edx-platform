@@ -70,6 +70,14 @@ class LoginSessionView(APIView):
             HttpResponse
 
         """
+        # Check the in-memory cache first
+        from django.core.cache import get_cache
+        cache = get_cache('loc_cache')
+        if cache:
+            form_desc = cache.get('user_api_login_session_form_desc')
+            if form_desc:
+                return HttpResponse(form_desc, content_type='application/json')
+
         form_desc = FormDescription("post", reverse("user_api_login_session"))
 
         # Translators: This label appears above a field on the login form
@@ -112,7 +120,12 @@ class LoginSessionView(APIView):
             }
         )
 
-        return HttpResponse(form_desc.to_json(), content_type="application/json")
+        form_desc_json = form_desc.to_json()
+
+        if cache:
+            cache.set('user_api_login_session_form_desc', form_desc_json)
+
+        return HttpResponse(form_desc_json, content_type="application/json")
 
     @method_decorator(require_post_params(["email", "password"]))
     @method_decorator(csrf_protect)
@@ -223,6 +236,14 @@ class RegistrationView(APIView):
             HttpResponse
 
         """
+
+        from django.core.cache import get_cache
+        cache = get_cache('loc_cache')
+        if cache:
+            form_desc = cache.get('user_api_registration_form')
+            if form_desc:
+                return HttpResponse(form_desc, content_type='application/json')
+
         form_desc = FormDescription("post", reverse("user_api_registration"))
         self._apply_third_party_auth_overrides(request, form_desc)
 
@@ -239,7 +260,11 @@ class RegistrationView(APIView):
                     required=self._is_field_required(field_name)
                 )
 
-        return HttpResponse(form_desc.to_json(), content_type="application/json")
+        form_json = form_desc.to_json()
+        if cache:
+            cache.set('user_api_registration_form', form_json)
+
+        return HttpResponse(form_json, content_type="application/json")
 
     @method_decorator(require_post_params(DEFAULT_FIELDS))
     @method_decorator(csrf_protect)
