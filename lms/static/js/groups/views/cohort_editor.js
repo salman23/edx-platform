@@ -9,6 +9,7 @@ var edx = edx || {};
         events : {
             'click .wrapper-tabs .tab': 'selectTab',
             'click .tab-content-settings .action-save': 'saveSettings',
+            'click .tab-content-settings .action-cancel': 'cancelSettings',
             'submit .cohort-management-group-add-form': 'addStudents'
         },
 
@@ -53,11 +54,30 @@ var edx = edx || {};
 
         saveSettings: function(event) {
             var cohortFormView = this.cohortFormView;
+            var self = this;
             event.preventDefault();
             cohortFormView.saveForm()
                 .done(function() {
                     cohortFormView.showMessage(gettext('Saved cohort'));
+                    self.setSettingsTabVisibility(false);
+                    location.reload(true);
+                }).fail(function() {
+                    self.setSettingsTabVisibility(true);
                 });
+        },
+
+        setSettingsTabVisibility: function(showSettings) {
+            var formActions = '.cohort-management-details .form-actions';
+            if (showSettings) {
+                this.$(formActions).removeClass('is-disabled').attr('aria-disabled', false);
+            } else {
+                this.$(formActions).addClass('is-disabled').attr('aria-disabled', true);
+            }
+        },
+
+        cancelSettings: function(event) {
+            event.preventDefault();
+            this.render();
         },
 
         setCohort: function(cohort) {
