@@ -58,7 +58,7 @@ def rerun_course(source_course_key_string, destination_course_key_string, user_i
             # it's possible there was an error even before the course module was created
             pass
 
-        return "exception: " + unicode(exc)
+        return ("exception: " + unicode(exc))[:999]  # don't exceed 1000 chars
 
 
 def deserialize_fields(json_fields):
