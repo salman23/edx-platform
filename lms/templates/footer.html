@@ -55,8 +55,7 @@
       <p class="copyright">${_("&copy; {copyright_year} {platform_name}, some rights reserved").format(
         platform_name=settings.PLATFORM_NAME,
         copyright_year=settings.COPYRIGHT_YEAR
-      )}
-      </p>
+      )}</p>
         <nav class="nav-legal">
           <ul>
 	    %if marketing_link('HONOR') and marketing_link('HONOR') != '#':
@@ -99,6 +98,14 @@
           ## greyscale logo for light background
           ## <img src="https://files.edx.org/openedx-logos/edx-openedx-logo-tag-dark.png" alt="${_('Powered by Open edX')}" width="150" height="50" />
         </a>
+      </p>
+    </div>
+    <div class="developed-by">
+      <p>
+        ${_("developed by {link_start}edX{link_end}").format(
+          link_start='<a href="{url}">'.format(url="https://www.edx.org"),
+          link_end='</a>',
+        )}
       </p>
     </div>
   </footer>
