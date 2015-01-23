@@ -427,6 +427,13 @@ nav.sequence-bottom {
       }
     }
   }
+
+#seq_content {
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
 }
 
 .xmodule_VerticalModule div.vert-mod > div ul.sequence-nav-buttons {
