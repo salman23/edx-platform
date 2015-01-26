@@ -7,7 +7,7 @@
     </ul>
 
     <div class="sequence-list-wrapper">
-      <ol role="tablist" aria-label="${_('Section Navigation')}" id="sequence-list">
+      <ol role="tablist" aria-label="${_('Section')}" id="sequence-list">
         % for idx, item in enumerate(items):
         ## TODO (vshnayder): add item.progress_detail either to the title or somewhere else.
         ## Make sure it gets updated after ajax calls.
@@ -46,8 +46,8 @@
   % endfor
   <div id="seq_content" tabindex="-1"></div>
 
-  <nav class="sequence-bottom">
-    <ul aria-label="${_('Section Navigation')}" class="sequence-nav-buttons">
+  <nav class="sequence-bottom" aria-label="${_('Section')}">
+    <ul class="sequence-nav-buttons">
       <li class="prev"><a role="button" href="#">${_("Previous")}</a></li>
       <li class="next"><a role="button" href="#">${_("Next")}</a></li>
     </ul>
