@@ -219,8 +219,7 @@ nav.sequence-nav {
           }
         }
 
-        &:hover,
-        &:focus {
+        &:hover, &:focus {
           p {
             display: block;
             margin-top: ($baseline/5);
@@ -253,8 +252,7 @@ nav.sequence-nav {
       box-shadow: 0 1px 0 rgba(255, 255, 255, .7) inset;
       z-index: 1;
 
-      &.prev,
-      &.next {
+      &.prev, &.next {
 
         a {
           background-position: center;
@@ -413,8 +411,4 @@ nav.sequence-bottom {
   &:active {
     outline: none;
   }
-}
-
-.xmodule_VerticalModule div.vert-mod > div ul.sequence-nav-buttons {
-  list-style: none !important;
 }
