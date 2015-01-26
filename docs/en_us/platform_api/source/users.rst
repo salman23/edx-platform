@@ -15,35 +15,7 @@ This page describes how to use the mobile user API to:
 Get User Details
 *******************
 
-.. .. autoclass:: mobile_api.users.views.UserDetail
-..    :members:
-
-**Use Case**
-
-Get information about the specified user and access other resources the user
-has permissions for.
-
-Users are redirected to this endpoint after logging in.
-
-You can use the **course_enrollments** value in the response to get a list of
-courses the user is enrolled in.
-
-**Example request**:
-
-``GET /api/mobile/v0.5/users/{username}``
-
-**Response Values**
-
-* id: The ID of the user.
-
-* username: The username of the currently logged in user.
-
-* email: The email address of the currently logged in user.
-
-* name: The full name of the currently logged in user.
-
-* course_enrollments: The URI to list the courses the currently logged in user
-  is enrolled in.
+.. autoclass:: mobile_api.users.views.UserDetail
 
 **Example response**
 
