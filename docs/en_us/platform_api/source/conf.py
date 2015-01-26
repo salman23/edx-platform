@@ -7,6 +7,17 @@
 import os
 from path import path
 import sys
+import mock
+ 
+MOCK_MODULES = ['lxml', 'requests', 'xblock', 'fields', 'xblock.fields',
+'frament', 'xblock.fragment', 'webob', 'multidict', 'webob.multidict', 'core',
+'xblock.core', 'runtime', 'xblock.runtime', 'sortedcontainers', 'contracts',
+'plugin', 'xblock.plugin', 'opaque_keys.edx.asides', 'asides',
+'dogstats_wrapper', 'fs', 'fs.errors', 'edxmako', 'edxmako.shortcuts',
+'shortcuts', 'crum', 'opaque_keys.edx.locator', 'LibraryLocator', 'Location']
+
+for mod_name in MOCK_MODULES: 
+    sys.modules[mod_name] = mock.Mock()
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
@@ -72,3 +83,5 @@ project = u'edX Platform API Version 0.5 Alpha'
 copyright = u'2015, edX'
 
 exclude_patterns = ['build', 'links.rst']
+
+
