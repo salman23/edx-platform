@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
-from decimal import Decimal, ROUND_DOWN
+import datetime
+from south.db import db
 from south.v2 import DataMigration
-
+from django.db import models
+from decimal import Decimal, ROUND_DOWN
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        """
-        Write your forwards methods here.
-        """
-        # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
-
         # Select all the invoices and number of registration codes(as qty) associated with every invoice
         invoices = orm.Invoice.objects.extra(
             select={
@@ -148,8 +145,8 @@ class Migration(DataMigration):
         'shoppingcart.invoice': {
             'Meta': {'object_name': 'Invoice'},
             'address_line_1': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'address_line_2': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
-            'address_line_3': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
+            'address_line_2': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'address_line_3': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
             'company_contact_email': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'company_contact_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -157,9 +154,9 @@ class Migration(DataMigration):
             'country': ('django.db.models.fields.CharField', [], {'max_length': '64', 'null': 'True'}),
             'course_id': ('xmodule_django.models.CourseKeyField', [], {'max_length': '255', 'db_index': 'True'}),
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
-            'customer_reference_number': ('django.db.models.fields.CharField', [], {'max_length': '63', 'null': 'True'}),
+            'customer_reference_number': ('django.db.models.fields.CharField', [], {'max_length': '63', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'internal_reference': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
+            'internal_reference': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'is_valid': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
             'recipient_email': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -170,8 +167,8 @@ class Migration(DataMigration):
         },
         'shoppingcart.invoiceitem': {
             'Meta': {'object_name': 'InvoiceItem'},
-            'billed_unit_price': ('django.db.models.fields.DecimalField', [], {'default': '0.0', 'max_digits': '30', 'decimal_places': '2'}),
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
+            'currency': ('django.db.models.fields.CharField', [], {'default': "'usd'", 'max_length': '8'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'invoice': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['shoppingcart.Invoice']"}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
@@ -184,6 +181,7 @@ class Migration(DataMigration):
             'comments': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
             'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
+            'currency': ('django.db.models.fields.CharField', [], {'default': "'usd'", 'max_length': '8'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'invoice': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['shoppingcart.Invoice']"}),
             'last_modified_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'last_modified_by_user'", 'to': "orm['auth.User']"}),
