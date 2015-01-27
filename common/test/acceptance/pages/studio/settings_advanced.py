@@ -128,7 +128,7 @@ class AdvancedSettingsPage(CoursePage):
 
         return result_map
 
-    def get_settings_names(self):
+    def get_displayed_settings_names(self):
         """
         Returns all settings displayed on the advanced settings page/screen/modal/whatever
         We call it 'name', but it's really whatever is embedded in the 'id' element for each field
@@ -136,32 +136,62 @@ class AdvancedSettingsPage(CoursePage):
         query = self.q(css=SETTINGS_NAME_SELECTOR)
         return [match.get_attribute('id') for match in query]
 
-    def get_hidden_settings_names(self):
+    def get_expected_settings_names(self):
         """
-        Returns a list of settings which should not be displayed on the Advanced Settings screen
-        Matches the list of settings found in cms/djangoapps/models/settings/course_metadata.py
+        Returns a list of settings expected to be displayed on the Advanced Settings screen
+        Should match the list of settings found in cms/djangoapps/models/settings/course_metadata.py
+        If a new setting is added to the metadata list, this test will fail and you must update it.
+        Basically this guards against accidental exposure of a field on the Advanced Settings screen
         """
         return [
-            'xml_attributes',
-            'start',
-            'end',
-            'enrollment_start',
-            'enrollment_end',
-            'tabs',
-            'graceperiod',
-            'checklists',
-            'show_timezone',
-            'format',
-            'graded',
-            'hide_from_toc',
-            'pdf_textbooks',
-            'user_partitions',
-            'name',
-            'tags',
-            'visible_to_staff_only',
-            'group_access',
-            'pre_requisite_courses',
-            'entrance_exam_enabled',
-            'entrance_exam_minimum_score_pct',
-            'entrance_exam_id',
+            'advanced_modules',
+            'allow_anonymous',
+            'allow_anonymous_to_peers',
+            'allow_public_wiki_access',
+            'cert_name_long',
+            'cert_name_short',
+            'certificates_display_behavior',
+            'cohort_config',
+            'course_image',
+            'advertised_start',
+            'announcement',
+            'display_name',
+            'info_sidebar_name',
+            'is_new',
+            'ispublic',
+            'max_student_enrollments_allowed',
+            'no_grade',
+            'display_coursenumber',
+            'display_organization',
+            'end_of_course_survey_url',
+            'catalog_visibility',
+            'chrome',
+            'days_early_for_beta',
+            'default_tab',
+            'disable_progress_graph',
+            'discussion_blackouts',
+            'discussion_sort_alpha',
+            'discussion_topics',
+            'due',
+            'due_date_display_format',
+            'use_latex_compiler',
+            'video_speed_optimizations',
+            'enrollment_domain',
+            'html_textbooks',
+            'invitation_only',
+            'lti_passports',
+            'matlab_api_key',
+            'max_attempts',
+            'mobile_available',
+            'rerandomize',
+            'remote_gradebook',
+            'annotation_token_secret',
+            'showanswer',
+            'show_calculator',
+            'show_chat',
+            'show_reset_button',
+            'static_asset_path',
+            'text_customization',
+            'annotation_storage_url',
+            'video_upload_pipeline'
         ]

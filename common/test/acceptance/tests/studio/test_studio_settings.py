@@ -291,8 +291,9 @@ class AdvancedSettingsValidationTest(StudioCourseTest):
             }
         )
 
-    def test_hidden_fields_not_displayed(self):
-        exposed_fields = self.advanced_settings.get_settings_names()
-        for field in self.advanced_settings.get_hidden_settings_names():
-            if field in exposed_fields:
-                self.fail("Field '{}' should be hidden from Advanced Settings.".format(field))
+    def test_only_expected_fields_are_displayed(self):
+        expected_fields = self.advanced_settings.get_expected_settings_names()
+        displayed_fields = self.advanced_settings.get_displayed_settings_names()
+        for field in displayed_fields:
+            if field not in expected_fields:
+                self.fail("Field '{}' not expected for Advanced Settings display.".format(field))
