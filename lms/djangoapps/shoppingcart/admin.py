@@ -60,6 +60,16 @@ class CourseRegistrationCodeInvoiceItemInline(admin.StackedInline):
     """
     model = CourseRegistrationCodeInvoiceItem
     extra = 0
+    can_delete = False
+    readonly_fields = (
+        'qty',
+        'unit_price',
+        'currency',
+        'course_id',
+    )
+
+    def has_add_permission(self, request):
+        return False
 
 
 class InvoiceTransactionInline(admin.StackedInline):
@@ -69,7 +79,12 @@ class InvoiceTransactionInline(admin.StackedInline):
     """
     model = InvoiceTransaction
     extra = 0
-    readonly_fields = ('created', 'modified', 'created_by', 'last_modified_by')
+    readonly_fields = (
+        'created',
+        'modified',
+        'created_by',
+        'last_modified_by'
+    )
 
 
 class InvoiceAdmin(admin.ModelAdmin):
@@ -81,6 +96,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
     """
     date_hierarchy = 'created'
+    can_delete = False
     readonly_fields = ('created', 'modified')
     search_fields = (
         'internal_reference',
@@ -117,6 +133,24 @@ class InvoiceAdmin(admin.ModelAdmin):
             }
         )
     )
+    readonly_fields = (
+        'internal_reference',
+        'customer_reference_number',
+        'created',
+        'modified',
+        'company_name',
+        'company_contact_name',
+        'company_contact_email',
+        'recipient_name',
+        'recipient_email',
+        'address_line_1',
+        'address_line_2',
+        'address_line_3',
+        'city',
+        'state',
+        'zip',
+        'country'
+    )
     inlines = [
         CourseRegistrationCodeInvoiceItemInline,
         InvoiceTransactionInline
@@ -131,6 +165,12 @@ class InvoiceAdmin(admin.ModelAdmin):
                     instance.created_by = request.user
                 instance.last_modified_by = request.user
                 instance.save()
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 admin.site.register(PaidCourseRegistrationAnnotation)
