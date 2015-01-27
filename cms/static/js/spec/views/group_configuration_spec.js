@@ -661,6 +661,7 @@ define([
                     groups: groups
                 }, {canBeEmpty: true});
             groupConfiguration.urlRoot = '/mock_url';
+            groupConfiguration.outlineUrl = '/mock_url';
             return groups;
         };
 
