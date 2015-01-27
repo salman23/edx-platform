@@ -99,7 +99,7 @@ class HelperMethods(object):
         problem = ItemFactory.create(
             category='problem',
             parent_location=vertical.location,
-            display_name='Test Problem{}'.format(name_suffix)
+            display_name='Test Problem {}'.format(name_suffix)
         )
 
         group_access_content = {'group_access': {cid: [group_id]}}
@@ -302,7 +302,7 @@ class GroupConfigurationsDetailHandlerTestCase(CourseTestCase, GroupConfiguratio
 
     ID = 0
 
-    def _url(self, cid=-1, gid=None):
+    def _url(self, cid=-1):
         """
         Return url for the handler.
         """
@@ -621,7 +621,7 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
         Test if content group json updated successfully with usage information.
         """
         self._add_user_partitions(count=1, scheme_id='cohort')
-        vertical, __ = self._create_problem_with_content_group(cid=0, group_id=1)
+        vertical, __ = self._create_problem_with_content_group(cid=0, group_id=1, name_suffix='0')
 
         actual = GroupConfiguration.get_or_create_content_group_configuration_with_usage(self.store, self.course)
 
@@ -640,7 +640,7 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
                     'usage': [
                         {
                             'url': '/container/{}'.format(vertical.location),
-                            'label': 'Test Unit / Test Problem'
+                            'label': 'Test Unit 0 / Test Problem 0'
                         }
                     ]
                 },
@@ -657,7 +657,7 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
         content group.
         """
         self._add_user_partitions(scheme_id='cohort')
-        vertical, __ = self._create_problem_with_content_group(cid=0, group_id=1,name_suffix='0')
+        vertical, __ = self._create_problem_with_content_group(cid=0, group_id=1, name_suffix='0')
         vertical1, __ = self._create_problem_with_content_group(cid=0, group_id=1, name_suffix='1')
 
         actual = GroupConfiguration.get_or_create_content_group_configuration_with_usage(self.store, self.course)
@@ -677,11 +677,11 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
                     'usage': [
                         {
                             'url': '/container/{}'.format(vertical.location),
-                            'label': 'Test Unit 0 / Test Problem0'
+                            'label': 'Test Unit 0 / Test Problem 0'
                         },
                         {
                             'url': '/container/{}'.format(vertical1.location),
-                            'label': 'Test Unit 1 / Test Problem1'
+                            'label': 'Test Unit 1 / Test Problem 1'
                         }
                     ]
                 },
