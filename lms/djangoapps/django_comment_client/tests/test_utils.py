@@ -9,13 +9,15 @@ from django.test.utils import override_settings
 from edxmako import add_lookup
 import mock
 
-from xmodule.modulestore.tests.django_utils import TEST_DATA_MOCK_MODULESTORE
 from django_comment_client.tests.factories import RoleFactory
 from django_comment_client.tests.unicode import UnicodeTestMixin
 import django_comment_client.utils as utils
+from openedx.core.djangoapps.course_groups.models import CourseUserGroupPartitionGroup
+from openedx.core.djangoapps.course_groups.tests.helpers import CohortFactory
 from student.tests.factories import UserFactory, CourseEnrollmentFactory
 from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
-from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
+from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase, TEST_DATA_MOCK_MODULESTORE
+from xmodule.partitions.partitions import Group, UserPartition
 
 
 class DictionaryTestCase(TestCase):
@@ -90,6 +92,8 @@ class CoursewareContextTestCase(ModuleStoreTestCase):
     comment client service integration
     """
     def setUp(self):
+        super(CoursewareContextTestCase, self).setUp(create_user=True)
+
         self.course = CourseFactory.create(org="TestX", number="101", display_name="Test Course")
         self.discussion1 = ItemFactory.create(
             parent_location=self.course.location,
@@ -107,12 +111,12 @@ class CoursewareContextTestCase(ModuleStoreTestCase):
         )
 
     def test_empty(self):
-        utils.add_courseware_context([], self.course)
+        utils.add_courseware_context([], self.course, self.user)
 
     def test_missing_commentable_id(self):
         orig = {"commentable_id": "non-inline"}
         modified = dict(orig)
-        utils.add_courseware_context([modified], self.course)
+        utils.add_courseware_context([modified], self.course, self.user)
         self.assertEqual(modified, orig)
 
     def test_basic(self):
@@ -120,7 +124,7 @@ class CoursewareContextTestCase(ModuleStoreTestCase):
             {"commentable_id": self.discussion1.discussion_id},
             {"commentable_id": self.discussion2.discussion_id}
         ]
-        utils.add_courseware_context(threads, self.course)
+        utils.add_courseware_context(threads, self.course, self.user)
 
         def assertThreadCorrect(thread, discussion, expected_title):  # pylint: disable=invalid-name
             """Asserts that the given thread has the expected set of properties"""
@@ -151,6 +155,9 @@ class CategoryMapTestCase(ModuleStoreTestCase):
     comment client service integration
     """
     def setUp(self):
+        super(CategoryMapTestCase, self).setUp()
+        self.staff_user = UserFactory.create(is_staff=True)
+
         self.course = CourseFactory.create(
             org="TestX", number="101", display_name="Test Course",
             # This test needs to use a course that has already started --
@@ -175,15 +182,15 @@ class CategoryMapTestCase(ModuleStoreTestCase):
             **kwargs
         )
 
-    def assertCategoryMapEquals(self, expected):
+    def assertCategoryMapEquals(self, expected, requesting_user=None):
         self.assertEqual(
-            utils.get_discussion_category_map(self.course),
+            utils.get_discussion_category_map(self.course, requesting_user or self.staff_user),
             expected
         )
 
     def test_empty(self):
         self.assertEqual(
-            utils.get_discussion_category_map(self.course),
+            utils.get_discussion_category_map(self.course, self.staff_user),
             {"entries": {}, "subcategories": {}, "children": []}
         )
 
@@ -577,7 +584,7 @@ class CategoryMapTestCase(ModuleStoreTestCase):
         )
 
     def test_ids_empty(self):
-        self.assertEqual(utils.get_discussion_categories_ids(self.course), [])
+        self.assertEqual(utils.get_discussion_categories_ids(self.course, self.staff_user), [])
 
     def test_ids_configured_topics(self):
         self.course.discussion_topics = {
@@ -586,7 +593,7 @@ class CategoryMapTestCase(ModuleStoreTestCase):
             "Topic C": {"id": "Topic_C"}
         }
         self.assertItemsEqual(
-            utils.get_discussion_categories_ids(self.course),
+            utils.get_discussion_categories_ids(self.course, self.staff_user),
             ["Topic_A", "Topic_B", "Topic_C"]
         )
 
@@ -598,7 +605,7 @@ class CategoryMapTestCase(ModuleStoreTestCase):
         self.create_discussion("Chapter 2 / Section 1 / Subsection 2", "Discussion")
         self.create_discussion("Chapter 3 / Section 1", "Discussion")
         self.assertItemsEqual(
-            utils.get_discussion_categories_ids(self.course),
+            utils.get_discussion_categories_ids(self.course, self.staff_user),
             ["discussion1", "discussion2", "discussion3", "discussion4", "discussion5", "discussion6"]
         )
 
@@ -612,8 +619,82 @@ class CategoryMapTestCase(ModuleStoreTestCase):
         self.create_discussion("Chapter 2", "Discussion")
         self.create_discussion("Chapter 2 / Section 1 / Subsection 1", "Discussion")
         self.assertItemsEqual(
-            utils.get_discussion_categories_ids(self.course),
+            utils.get_discussion_categories_ids(self.course, self.staff_user),
             ["Topic_A", "Topic_B", "Topic_C", "discussion1", "discussion2", "discussion3"]
+        )
+
+    def test_cohorted_discussion_component(self):
+        """
+        Verify that discussion module categories are only visible to
+        users which can see those modules
+        """
+        alpha_user = UserFactory.create(email='alpha@example.com', username='alpha user')
+        beta_user = UserFactory.create(email='beta@example.com', username='beta user')
+        self.course.user_partitions = [
+            UserPartition(
+                0,
+                'Content Group Configuration',
+                '',
+                [Group(1, 'Alpha'), Group(2, 'Beta')],
+                scheme_id='cohort'
+            )
+        ]
+        self.course.cohort_config = {'cohorted': True}
+        self.update_course(self.course, self.staff_user.id)
+        alpha_cohort = CohortFactory(
+            course_id=self.course.id,
+            name='Cohort Alpha',
+            users=[alpha_user]
+        )
+        beta_cohort = CohortFactory(
+            course_id=self.course.id,
+            name='Cohort Beta',
+            users=[beta_user]
+        )
+        CourseUserGroupPartitionGroup.objects.create(
+            course_user_group=alpha_cohort,
+            partition_id=self.course.user_partitions[0].id,
+            group_id=self.course.user_partitions[0].groups[0].id
+        )
+        CourseUserGroupPartitionGroup.objects.create(
+            course_user_group=beta_cohort,
+            partition_id=self.course.user_partitions[0].id,
+            group_id=self.course.user_partitions[0].groups[1].id
+        )
+        self.create_discussion(
+            'Chapter',
+            'Visible to Alpha',
+            group_access={self.course.user_partitions[0].id: [self.course.user_partitions[0].groups[0].id]}
+        )
+
+        for user_with_access in [alpha_user, self.staff_user]:
+            self.assertCategoryMapEquals(
+                {
+                    'subcategories': {
+                        u'Chapter': {
+                            'subcategories': {},
+                            'children': [u'Visible to Alpha'],
+                            'entries': {
+                                u'Visible to Alpha': {
+                                    'sort_key': None,
+                                    'is_cohorted': True,
+                                    'id': u'discussion1'
+                                }
+                            }
+                        }
+                    },
+                    'children': [u'Chapter'],
+                    'entries': {}
+                },
+                requesting_user=user_with_access
+            )
+        self.assertCategoryMapEquals(
+            {
+                'subcategories': {},
+                'children': [],
+                'entries': {}
+            },
+            requesting_user=beta_user
         )
 
 
