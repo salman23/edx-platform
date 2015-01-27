@@ -785,16 +785,16 @@ class Invoice(TimeStampedModel):
     recipient_name = models.CharField(max_length=255)
     recipient_email = models.CharField(max_length=255)
     address_line_1 = models.CharField(max_length=255)
-    address_line_2 = models.CharField(max_length=255, null=True)
-    address_line_3 = models.CharField(max_length=255, null=True)
+    address_line_2 = models.CharField(max_length=255, null=True, blank=True)
+    address_line_3 = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True)
     state = models.CharField(max_length=255, null=True)
     zip = models.CharField(max_length=15, null=True)
     country = models.CharField(max_length=64, null=True)
     course_id = CourseKeyField(max_length=255, db_index=True)
     total_amount = models.FloatField()
-    internal_reference = models.CharField(max_length=255, null=True)
-    customer_reference_number = models.CharField(max_length=63, null=True)
+    internal_reference = models.CharField(max_length=255, null=True, blank=True)
+    customer_reference_number = models.CharField(max_length=63, null=True, blank=True)
     is_valid = models.BooleanField(default=True)
 
     def generate_pdf_invoice(self, course, course_price, quantity, sale_price):
@@ -825,14 +825,24 @@ class Invoice(TimeStampedModel):
         return pdf_buffer
 
     def __unicode__(self):
-        return "company: {} , internal reference: {} , customer reference number: {}".format(
-            self.company_name,
-            self.internal_reference,
-            self.customer_reference_number
+        label = (
+            unicode(self.internal_reference)
+            if self.internal_reference
+            else u"No label"
         )
 
-INVOICE_TRANSACTION_STATUSES = (
+        created = (
+            self.created.strftime("%Y-%m-%d")
+            if self.created
+            else u"No date"
+        )
 
+        return u"{label} ({date_created})".format(
+            label=label, date_created=created
+        )
+
+
+INVOICE_TRANSACTION_STATUSES = (
     ('started', 'started'),
     ('completed', 'completed'),
     ('cancelled', 'cancelled')

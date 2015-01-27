@@ -8,6 +8,7 @@ from shoppingcart.models import (
     DonationConfiguration,
     Invoice,
     InvoiceItem,
+    CourseRegistrationCodeInvoiceItem,
     InvoiceTransaction
 )
 
@@ -54,9 +55,71 @@ class SoftDeleteCouponAdmin(admin.ModelAdmin):
 
     really_delete_selected.short_description = "Delete s selected entries"
 
+
+class CourseRegistrationCodeInvoiceItemInline(admin.StackedInline):
+    """TODO """
+    model = CourseRegistrationCodeInvoiceItem
+    extra = 0
+
+
+class InvoiceTransactionInline(admin.StackedInline):
+    """TODO """
+    model = InvoiceTransaction
+    extra = 0
+    readonly_fields = ('created', 'modified', 'created_by', 'last_modified_by')
+
+
+class InvoiceAdmin(admin.ModelAdmin):
+    """TODO """
+    date_hierarchy = 'created'
+    readonly_fields = ('created', 'modified')
+    fieldsets = (
+        (
+            None, {
+                'fields': (
+                    'internal_reference',
+                    'customer_reference_number',
+                    'created',
+                    'modified',
+                )
+            }
+        ),
+        (
+            'Billing Information', {
+                'fields': (
+                    'company_name',
+                    'company_contact_name',
+                    'company_contact_email',
+                    'recipient_name',
+                    'recipient_email',
+                    'address_line_1',
+                    'address_line_2',
+                    'address_line_3',
+                    'city',
+                    'state',
+                    'zip',
+                    'country'
+                )
+            }
+        )
+    )
+    inlines = [
+        CourseRegistrationCodeInvoiceItemInline,
+        InvoiceTransactionInline
+    ]
+
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for instance in instances:
+            if isinstance(instance, InvoiceTransaction):
+                if not hasattr(instance, 'created_by'):
+                    instance.created_by = request.user
+                instance.last_modified_by = request.user
+                instance.save()
+
+
 admin.site.register(PaidCourseRegistrationAnnotation)
 admin.site.register(Coupon, SoftDeleteCouponAdmin)
 admin.site.register(DonationConfiguration)
-admin.site.register(Invoice)
-admin.site.register(InvoiceItem)
+admin.site.register(Invoice, InvoiceAdmin)
 admin.site.register(InvoiceTransaction)
