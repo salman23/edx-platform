@@ -59,7 +59,7 @@ var edx = edx || {};
             cohortFormView.saveForm()
                 .done(function() {
                     cohortFormView.showMessage(gettext('Saved cohort'));
-                    self.setSettingsTabVisibility(false);
+                    //self.setSettingsTabVisibility(false);
                     location.reload(true);
                 }).fail(function() {
                     self.setSettingsTabVisibility(true);
