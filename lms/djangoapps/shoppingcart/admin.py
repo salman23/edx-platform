@@ -1,13 +1,10 @@
-"""
-Allows django admin site to add PaidCourseRegistrationAnnotations
-"""
+"""Django admin interface for the shopping cart models. """
 from ratelimitbackend import admin
 from shoppingcart.models import (
     PaidCourseRegistrationAnnotation,
     Coupon,
     DonationConfiguration,
     Invoice,
-    InvoiceItem,
     CourseRegistrationCodeInvoiceItem,
     InvoiceTransaction
 )
@@ -57,22 +54,39 @@ class SoftDeleteCouponAdmin(admin.ModelAdmin):
 
 
 class CourseRegistrationCodeInvoiceItemInline(admin.StackedInline):
-    """TODO """
+    """Admin for course registration code invoice items.
+
+    Displayed inline within the invoice admin UI.
+    """
     model = CourseRegistrationCodeInvoiceItem
     extra = 0
 
 
 class InvoiceTransactionInline(admin.StackedInline):
-    """TODO """
+    """Admin for invoice transactions.
+
+    Displayed inline within the invoice admin UI.
+    """
     model = InvoiceTransaction
     extra = 0
     readonly_fields = ('created', 'modified', 'created_by', 'last_modified_by')
 
 
 class InvoiceAdmin(admin.ModelAdmin):
-    """TODO """
+    """Admin for invoices.
+
+    This is intended for the internal finance team
+    to be able to view and update invoice information,
+    including payments and refunds.
+
+    """
     date_hierarchy = 'created'
     readonly_fields = ('created', 'modified')
+    search_fields = (
+        'internal_reference',
+        'customer_reference_number',
+        'company_name',
+    )
     fieldsets = (
         (
             None, {
@@ -109,6 +123,7 @@ class InvoiceAdmin(admin.ModelAdmin):
     ]
 
     def save_formset(self, request, form, formset, change):
+        """Save the user who created and modified invoice transactions. """
         instances = formset.save(commit=False)
         for instance in instances:
             if isinstance(instance, InvoiceTransaction):
@@ -122,4 +137,3 @@ admin.site.register(PaidCourseRegistrationAnnotation)
 admin.site.register(Coupon, SoftDeleteCouponAdmin)
 admin.site.register(DonationConfiguration)
 admin.site.register(Invoice, InvoiceAdmin)
-admin.site.register(InvoiceTransaction)

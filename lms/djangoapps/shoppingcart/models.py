@@ -775,9 +775,9 @@ class OrderItem(TimeStampedModel):
 
 class Invoice(TimeStampedModel):
     """
-         This table capture all the information needed to support "invoicing"
-         which is when a user wants to purchase Registration Codes,
-         but will not do so via a Credit Card transaction.
+    This table capture all the information needed to support "invoicing"
+    which is when a user wants to purchase Registration Codes,
+    but will not do so via a Credit Card transaction.
     """
     company_name = models.CharField(max_length=255, db_index=True)
     company_contact_name = models.CharField(max_length=255)
@@ -793,8 +793,19 @@ class Invoice(TimeStampedModel):
     country = models.CharField(max_length=64, null=True)
     course_id = CourseKeyField(max_length=255, db_index=True)
     total_amount = models.FloatField()
-    internal_reference = models.CharField(max_length=255, null=True, blank=True)
-    customer_reference_number = models.CharField(max_length=63, null=True, blank=True)
+
+    internal_reference = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Internal reference code for this invoice."
+    )
+    customer_reference_number = models.CharField(
+        max_length=63,
+        null=True,
+        blank=True,
+        help_text="Customer's reference code for this invoice."
+    )
     is_valid = models.BooleanField(default=True)
 
     def generate_pdf_invoice(self, course, course_price, quantity, sale_price):
@@ -854,11 +865,35 @@ class InvoiceTransaction(TimeStampedModel):
          This table capture all the information needed to support "InvoicingTransactions"
     """
     invoice = models.ForeignKey(Invoice)
-    amount = models.DecimalField(default=0.0, decimal_places=2, max_digits=30)
-    comments = models.TextField(null=True)
+    amount = models.DecimalField(
+        default=0.0, decimal_places=2, max_digits=30,
+        help_text=(
+            "The amount of the transaction.  Use positive amounts for payments"
+            " and negative amounts for refunds."
+        )
+    )
+    currency = models.CharField(
+        default="usd",
+        max_length=8,
+        help_text="Lower-case ISO currency codes"
+    )
+    comments = models.TextField(
+        null=True,
+        help_text="Optional: provide additional information for this transaction"
+    )
+    status = models.CharField(
+        max_length=32,
+        default='started',
+        choices=INVOICE_TRANSACTION_STATUSES,
+        help_text=(
+            "The status of the payment or refund. "
+            "'started' means that payment is expected, but money has not yet been transferred. "
+            "'completed' means that the payment or refund was received. "
+            "'cancelled' means that payment or refund was expected, but was cancelled before money was transferred. "
+        )
+    )
     created_by = models.ForeignKey(User)
     last_modified_by = models.ForeignKey(User, related_name='last_modified_by_user')
-    status = models.CharField(max_length=32, default='started', choices=INVOICE_TRANSACTION_STATUSES)
 
     @classmethod
     def add_invoice_transaction(cls, invoice_id, amount, comments, user):
@@ -883,8 +918,21 @@ class InvoiceItem(TimeStampedModel):
     """
     objects = InheritanceManager()
     invoice = models.ForeignKey(Invoice, db_index=True)
-    qty = models.IntegerField(default=1)
-    unit_price = models.DecimalField(default=0.0, decimal_places=2, max_digits=30)
+    qty = models.IntegerField(
+        default=1,
+        help_text="The number of items sold."
+    )
+    unit_price = models.DecimalField(
+        default=0.0,
+        decimal_places=2,
+        max_digits=30,
+        help_text="The price per item sold, including discounts."
+    )
+    currency = models.CharField(
+        default="usd",
+        max_length=8,
+        help_text="Lower-case ISO currency codes"
+    )
 
 
 class CourseRegistrationCodeInvoiceItem(InvoiceItem):
