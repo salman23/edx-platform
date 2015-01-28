@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 """
 Group Configuration Tests.
 """
@@ -612,6 +614,41 @@ class GroupConfigurationsUsageInfoTestCase(CourseTestCase, HelperMethods):
                 {'id': 0, 'name': 'Group A', 'version': 1, 'usage': []},
                 {'id': 1, 'name': 'Group B', 'version': 1, 'usage': []},
                 {'id': 2, 'name': 'Group C', 'version': 1, 'usage': []},
+            ],
+        }
+        self.assertEqual(actual, expected)
+
+    def test_can_get_correct_usage_info_when_special_characters_are_in_content(self):
+        """
+        Test if content group json updated successfully with usage information.
+        """
+        self._add_user_partitions(count=1, scheme_id='cohort')
+        vertical, __ = self._create_problem_with_content_group(cid=0, group_id=1, name_suffix='0')
+
+        actual = GroupConfiguration.get_or_create_content_group_configuration_with_usage(self.store, self.course)
+
+        expected = {
+            'id': 0,
+            'name': u"Science and Cooking Chef Profile: JOSÉ ANDRÉS",
+            'scheme': 'cohort',
+            'description': 'Description 0',
+            'version': UserPartition.VERSION,
+            'groups': [
+                {
+                    'id': 0, 'name': 'Group A', 'version': 1, 'usage': []
+                },
+                {
+                    'id': 1, 'name': 'Group B', 'version': 1,
+                    'usage': [
+                        {
+                            'url': '/container/{}'.format(vertical.location),
+                            'label': 'Test Unit 0 / Test Problem 0'
+                        }
+                    ]
+                },
+                {
+                    'id': 2, 'name': 'Group C', 'version': 1, 'usage': []
+                },
             ],
         }
         self.assertEqual(actual, expected)

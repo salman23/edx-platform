@@ -1426,7 +1426,7 @@ class GroupConfiguration(object):
 
             validation_summary = split_test.general_validation_message()
             usage_info[split_test.user_partition_id].append({
-                'label': '{} / {}'.format(unit.display_name, split_test.display_name),
+                'label': u"{} / {}".format(unit.display_name, split_test.display_name),
                 'url': unit_url,
                 'validation': validation_summary.to_json() if validation_summary else None,
             })
@@ -1485,7 +1485,7 @@ class GroupConfiguration(object):
                     )
 
                     usage_info[group_id].append({
-                        'label': '{} / {}'.format(unit.display_name, module.display_name),
+                        'label': u"{} / {}".format(unit.display_name, module.display_name),
                         'url': unit_url,
                     })
         return usage_info
@@ -1676,7 +1676,7 @@ def group_configurations_detail_handler(request, course_key_string, group_config
 
                 if used:
                     return JsonResponse(
-                        {"error": _("This Group Configuration is already in use and cannot be removed.")},
+                        {"error": _("This group configuration is in use and cannot be deleted.")},
                         status=400
                     )
                 course.user_partitions.pop(index)
@@ -1690,7 +1690,7 @@ def group_configurations_detail_handler(request, course_key_string, group_config
 
                 if used:
                     return JsonResponse(
-                        {"error": _("This Content Group is already in use and cannot be removed.")},
+                        {"error": _("This content group is in use and cannot be deleted.")},
                         status=400
                     )
                 configuration = GroupConfiguration.remove_content_group_from_configuration(configuration, group_id)
