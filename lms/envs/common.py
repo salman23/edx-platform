@@ -76,8 +76,8 @@ FEATURES = {
     'REROUTE_ACTIVATION_EMAIL': False,  # nonempty string = address for all activation emails
     'DEBUG_LEVEL': 0,  # 0 = lowest level, least verbose, 255 = max level, most verbose
 
-    ## DO NOT SET TO True IN THIS FILE
-    ## Doing so will cause all courses to be released on production
+    # DO NOT SET TO True IN THIS FILE
+    # Doing so will cause all courses to be released on production
     'DISABLE_START_DATES': False,  # When True, all courses will be active, regardless of start date
 
     # When True, will only publicly list courses by the subdomain. Expects you
@@ -330,7 +330,7 @@ FEATURES = {
     'MODE_CREATION_FOR_TESTING': False,
 
     # Courseware search feature
-    'ENABLE_COURSEWARE_SEARCH': False,
+    'ENABLE_COURSEWARE_SEARCH': True,
 }
 
 # Ignore static asset files on import which match this pattern
@@ -481,7 +481,7 @@ COURSE_NAME = "6.002_Spring_2012"
 COURSE_NUMBER = "6.002x"
 COURSE_TITLE = "Circuits and Electronics"
 
-### Dark code. Should be enabled in local settings for devel.
+# Dark code. Should be enabled in local settings for devel.
 
 ENABLE_MULTICOURSE = False  # set to False to disable multicourse display (see lib.util.views.edXhome)
 
@@ -914,7 +914,7 @@ PAYMENT_REPORT_GENERATOR_GROUP = 'shoppingcart_report_access'
 
 ################################# open ended grading config  #####################
 
-#By setting up the default settings with an incorrect user name and password,
+# By setting up the default settings with an incorrect user name and password,
 # will get an error when attempting to connect
 OPEN_ENDED_GRADING_INTERFACE = {
     'url': 'http://example.com/peer_grading',
@@ -1246,8 +1246,10 @@ PIPELINE_CSS = {
 }
 
 
-common_js = set(rooted_glob(COMMON_ROOT / 'static', 'coffee/src/**/*.js')) - set(courseware_js + discussion_js + staff_grading_js + open_ended_js + notes_js + instructor_dash_js)
-project_js = set(rooted_glob(PROJECT_ROOT / 'static', 'coffee/src/**/*.js')) - set(courseware_js + discussion_js + staff_grading_js + open_ended_js + notes_js + instructor_dash_js)
+common_js = set(rooted_glob(COMMON_ROOT / 'static', 'coffee/src/**/*.js')) - \
+    set(courseware_js + discussion_js + staff_grading_js + open_ended_js + notes_js + instructor_dash_js)
+project_js = set(rooted_glob(PROJECT_ROOT / 'static', 'coffee/src/**/*.js')) - \
+    set(courseware_js + discussion_js + staff_grading_js + open_ended_js + notes_js + instructor_dash_js)
 
 
 PIPELINE_JS = {
@@ -1923,7 +1925,7 @@ ALL_LANGUAGES = (
 )
 
 
-### Apps only installed in some instances
+# Apps only installed in some instances
 OPTIONAL_APPS = (
     'mentoring',
 
@@ -1959,15 +1961,15 @@ for app_name in OPTIONAL_APPS:
 # See common/djangoapps/third_party_auth/settings.py for configuration details.
 THIRD_PARTY_AUTH = {}
 
-### ADVANCED_SECURITY_CONFIG
+# ADVANCED_SECURITY_CONFIG
 # Empty by default
 ADVANCED_SECURITY_CONFIG = {}
 
-### External auth usage -- prefixes for ENROLLMENT_DOMAIN
+# External auth usage -- prefixes for ENROLLMENT_DOMAIN
 SHIBBOLETH_DOMAIN_PREFIX = 'shib:'
 OPENID_DOMAIN_PREFIX = 'openid:'
 
-### Analytics Data API + Dashboard (Insights) settings
+# Analytics Data API + Dashboard (Insights) settings
 ANALYTICS_DATA_URL = ""
 ANALYTICS_DATA_TOKEN = ""
 ANALYTICS_DASHBOARD_URL = ""
@@ -1991,7 +1993,7 @@ COURSE_CATALOG_VISIBILITY_PERMISSION = 'see_exists'
 # visible. We default this to the legacy permission 'see_exists'.
 COURSE_ABOUT_VISIBILITY_PERMISSION = 'see_exists'
 
-#date format the api will be formatting the datetime values
+# date format the api will be formatting the datetime values
 API_DATE_FORMAT = '%Y-%m-%d'
 
 # Enrollment API Cache Timeout

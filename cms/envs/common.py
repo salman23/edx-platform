@@ -148,7 +148,7 @@ FEATURES = {
     'ENTRANCE_EXAMS': False,
 
     # Enable the courseware search functionality
-    'ENABLE_COURSEWARE_INDEX': False,
+    'ENABLE_COURSEWARE_INDEX': True,
 }
 
 ENABLE_JASMINE = False
@@ -539,7 +539,9 @@ REQUIRE_EXCLUDE = ("build.txt",)
 
 # The execution environment in which to run r.js: auto, node or rhino.
 # auto will autodetect the environment and make use of node if available and rhino if not.
-# It can also be a path to a custom class that subclasses require.environments.Environment and defines some "args" function that returns a list with the command arguments to execute.
+# It can also be a path to a custom class that subclasses
+# require.environments.Environment and defines some "args" function that
+# returns a list with the command arguments to execute.
 REQUIRE_ENVIRONMENT = "node"
 
 # If you want to enable Tender integration (http://tenderapp.com/),
@@ -752,7 +754,7 @@ MAX_FAILED_LOGIN_ATTEMPTS_ALLOWED = 5
 MAX_FAILED_LOGIN_ATTEMPTS_LOCKOUT_PERIOD_SECS = 15 * 60
 
 
-### Apps only installed in some instances
+# Apps only installed in some instances
 
 OPTIONAL_APPS = (
     'mentoring',
@@ -786,25 +788,25 @@ for app_name in OPTIONAL_APPS:
             continue
     INSTALLED_APPS += (app_name,)
 
-### ADVANCED_SECURITY_CONFIG
+# ADVANCED_SECURITY_CONFIG
 # Empty by default
 ADVANCED_SECURITY_CONFIG = {}
 
-### External auth usage -- prefixes for ENROLLMENT_DOMAIN
+# External auth usage -- prefixes for ENROLLMENT_DOMAIN
 SHIBBOLETH_DOMAIN_PREFIX = 'shib:'
 OPENID_DOMAIN_PREFIX = 'openid:'
 
-### Size of chunks into which asset uploads will be divided
+# Size of chunks into which asset uploads will be divided
 UPLOAD_CHUNK_SIZE_IN_MB = 10
 
-### Max size of asset uploads to GridFS
+# Max size of asset uploads to GridFS
 MAX_ASSET_UPLOAD_FILE_SIZE_IN_MB = 10
 
 # FAQ url to direct users to if they upload
 # a file that exceeds the above size
 MAX_ASSET_UPLOAD_FILE_SIZE_URL = ""
 
-### Default value for entrance exam minimum score
+# Default value for entrance exam minimum score
 ENTRANCE_EXAM_MIN_SCORE_PCT = 50
 
 ################ ADVANCED_COMPONENT_TYPES ###############
@@ -825,8 +827,10 @@ ADVANCED_COMPONENT_TYPES = [
     'concept',  # Concept mapper. See https://github.com/pmitros/ConceptXBlock
     'done',  # Lets students mark things as done. See https://github.com/pmitros/DoneXBlock
     'audio',  # Embed an audio file. See https://github.com/pmitros/AudioXBlock
-    'recommender',  # Crowdsourced recommender. Prototype by dli&pmitros. Intended for roll-out in one place in one course.
-    'profile',  # Prototype user profile XBlock. Used to test XBlock parameter passing. See https://github.com/pmitros/ProfileXBlock
+    # Crowdsourced recommender. Prototype by dli&pmitros. Intended for roll-out in one place in one course.
+    'recommender',
+    # Prototype user profile XBlock. Used to test XBlock parameter passing. See https://github.com/pmitros/ProfileXBlock
+    'profile',
 
     'split_test',
     'combinedopenended',
@@ -849,7 +853,7 @@ ADVANCED_PROBLEM_TYPES = [
     }
 ]
 
-#date format the api will be formatting the datetime values
+# date format the api will be formatting the datetime values
 API_DATE_FORMAT = '%Y-%m-%d'
 
 # Files and Uploads type filter values
